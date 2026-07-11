@@ -13,7 +13,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST) // Явно возвращаем 400 Bad Request
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
-    @ResponseStatus(HttpStatus.CONFLICT) // Для бизнес-конфликтов логично возвращать 409 Conflict вместо 400
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ApiResponseDTO handleBusinessExceptions(RuntimeException ex) {
         return new ApiResponseDTO(ex.getMessage(), false);
     }
