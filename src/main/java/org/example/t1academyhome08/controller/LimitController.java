@@ -25,19 +25,19 @@ public class LimitController {
     @PostMapping("/reserve")
     public ApiResponseDTO reserve(@Valid @RequestBody ReserveLimitRequestDTO request) {
         limitService.reserveLimit(request.userId(), request.operationId(), request.amount());
-        return new ApiResponseDTO("Limit reserved successfully", true);
+        return new ApiResponseDTO("Лимит успешно зарезервирован", true);
     }
 
     @PostMapping("/confirm")
     public ApiResponseDTO confirm(@Valid @RequestBody OperationActionRequestDTO request) {
         limitService.confirmOperation(request.operationId());
-        return new ApiResponseDTO("Operation confirmed, limit deducted permanently", true);
+        return new ApiResponseDTO("Операция подтверждена, лимит списан окончательно", true);
     }
 
     @PostMapping("/cancel")
     public ApiResponseDTO cancel(@Valid @RequestBody OperationActionRequestDTO request) {
         limitService.cancelOperation(request.operationId());
-        return new ApiResponseDTO("Operation cancelled, limit restored", true);
+        return new ApiResponseDTO("Операция отменена, лимит восстановлен", true);
     }
 
     @DeleteMapping("/clear-all-data")
