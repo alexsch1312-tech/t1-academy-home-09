@@ -16,5 +16,6 @@ spring:
 app:
   limits:
     default-value: 100000.00
+  scheduler:
     cron-schedule: "0 0 0 * * *"
     timezone: "Europe/Moscow"

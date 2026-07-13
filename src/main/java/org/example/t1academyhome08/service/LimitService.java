@@ -107,8 +107,8 @@ public class LimitService {
     //0 секунда 0 минута 0 час (полночь).* — каждый день месяца.* — каждый месяц.* — любой день недели
 
     @Scheduled(
-            cron = "${app.limits.cron-schedule:0 0 0 * * *}",
-            zone = "${app.limits.timezone:UTC}"
+            cron = "${app.scheduler.cron-schedule:0 0 0 * * *}",
+            zone = "${app.scheduler.timezone:UTC}"
     )
     @Transactional
     public void resetDailyLimits() {
