@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-init-tables
+      author: avschetinin
+      changes:
+        - createTable:
+            tableName: tbl_limit_user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: actual_limit
+                  type: numeric(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reserved_limit
+                  type: numeric(15, 2)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: tbl_limit_operation
+            columns:
+              - column:
+                  name: operation_id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_operation_user
+                    referencedTableName: tbl_limit_user
+                    referencedColumnNames: id
+              - column:
+                  name: amount
+                  type: numeric(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
