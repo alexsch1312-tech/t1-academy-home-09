@@ -3,10 +3,10 @@ package org.example.t1academyhome08.service;
 import org.example.t1academyhome08.entity.*;
 import org.example.t1academyhome08.repository.*;
 import org.example.t1academyhome08.dto.UserLimitResponseDTO;
-import org.example.t1academyhome08.dto.LimitEvent; // Импорт DTO для Kafka
+import org.example.t1academyhome08.dto.LimitEvent;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate; // Импорт шаблона Kafka
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +19,11 @@ public class LimitService {
     private final LimitOperationRepository operationRepository;
     private final BigDecimal defaultLimit;
 
-    // Поле для работы с продюсером Kafka
     private final KafkaTemplate<String, LimitEvent> kafkaTemplate;
 
-    // Свойство имени топика из настроек
     @Value("${app.kafka.topic-name:limit-status-events}")
     private String topicName;
 
-    // Обновленный конструктор со всеми зависимостями
     public LimitService(
             UserRepository userRepository,
             LimitOperationRepository operationRepository,
@@ -71,8 +68,7 @@ public class LimitService {
         LimitOperation operation = new LimitOperation(operationId, userId, amount, OperationStatus.RESERVED);
         operationRepository.save(operation);
 
-        // ОТПРАВКА СОБЫТИЯ В KAFKA: Резерв средств
-        LimitEvent event = new LimitEvent(userId, operationId, amount, "RESERVED", "Средства успешно зарезервированы");
+         LimitEvent event = new LimitEvent(userId, operationId, amount, "RESERVED", "Средства успешно зарезервированы");
         kafkaTemplate.send(topicName, operationId, event);
     }
 
@@ -94,7 +90,6 @@ public class LimitService {
         operation.setStatus(OperationStatus.CONFIRMED);
         operationRepository.save(operation);
 
-        // ОТПРАВКА СОБЫТИЯ В KAFKA: Успешное списание
         LimitEvent event = new LimitEvent(operation.getUserId(), operationId, operation.getAmount(), "CONFIRMED", "Лимит окончательно списан");
         kafkaTemplate.send(topicName, operationId, event);
     }
@@ -118,7 +113,6 @@ public class LimitService {
         operation.setStatus(OperationStatus.CANCELLED);
         operationRepository.save(operation);
 
-        // ОТПРАВКА СОБЫТИЯ В KAFKA: Отмена и восстановление лимита
         LimitEvent event = new LimitEvent(operation.getUserId(), operationId, operation.getAmount(), "CANCELLED", "Операция отменена, лимит восстановлен");
         kafkaTemplate.send(topicName, operationId, event);
     }

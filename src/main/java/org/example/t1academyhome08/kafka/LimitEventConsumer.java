@@ -14,7 +14,6 @@ public class LimitEventConsumer {
 
     private final NotificationService notificationService;
 
-    //@KafkaListener(topics = "${app.kafka.topic-name}", groupId = "${spring.kafka.consumer.group-id}")
     @KafkaListener(topics = "${app.kafka.topic-name}", groupId = "${app.kafka.group-id}")
     public void consume(LimitEvent event) {
         log.info("Received Kafka event for consumer: operationId={}, status={}", event.operationId(), event.status());
