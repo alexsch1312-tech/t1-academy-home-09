@@ -16,7 +16,7 @@ public class LimitEventConsumer {
 
     @KafkaListener(topics = "${app.kafka.topic-name}", groupId = "${app.kafka.group-id}")
     public void consume(LimitEvent event) {
-        log.info("Received Kafka event for consumer: operationId={}, status={}", event.operationId(), event.status());
+        log.info("Получено событие Kafka для потребителя: operationId={}, status={}", event.operationId(), event.status());
         notificationService.sendEmailNotification(event);
     }
 }
