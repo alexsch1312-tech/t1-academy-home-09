@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # 1. База данных PostgreSQL 18
   postgres:
     image: postgres:16-alpine3.24
     container_name: limit-postgres
@@ -19,7 +18,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # 2. Брокер сообщений Apache Kafka (KRaft режим, без Zookeeper)
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: limit-kafka
@@ -52,7 +50,6 @@ services:
       KAFKA_CLUSTERS_0_NAME: local-kraft
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
 
-  # 3. Локальная SMTP заглушка Mailhog
   mailhog:
     image: mailhog/mailhog:latest
     container_name: limit-mailhog

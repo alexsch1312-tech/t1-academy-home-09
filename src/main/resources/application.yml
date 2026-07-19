@@ -37,5 +37,5 @@ app:
     timezone: "Europe/Moscow"
   kafka:
     topic-name: "limit-status-events"
-    group-id: "limit-service-group" # Добавили сюда
+    group-id: "limit-service-group"
 
