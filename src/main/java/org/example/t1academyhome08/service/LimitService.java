@@ -2,12 +2,15 @@ package org.example.t1academyhome08.service;
 
 import org.example.t1academyhome08.entity.*;
 import org.example.t1academyhome08.repository.*;
+import org.example.t1academyhome08.dto.UserLimitResponseDTO;
+import org.example.t1academyhome08.dto.LimitEvent;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
-import org.example.t1academyhome08.dto.UserLimitResponseDTO;
 
 @Service
 public class LimitService {
@@ -15,13 +18,21 @@ public class LimitService {
     private final UserRepository userRepository;
     private final LimitOperationRepository operationRepository;
     private final BigDecimal defaultLimit;
+
+    private final KafkaTemplate<String, LimitEvent> kafkaTemplate;
+
+    @Value("${app.kafka.topic-name:limit-status-events}")
+    private String topicName;
+
     public LimitService(
             UserRepository userRepository,
             LimitOperationRepository operationRepository,
-            @Value("${app.limits.default-value:100000.00}") BigDecimal defaultLimit) {
+            @Value("${app.limits.default-value:100000.00}") BigDecimal defaultLimit,
+            KafkaTemplate<String, LimitEvent> kafkaTemplate) {
         this.userRepository = userRepository;
         this.operationRepository = operationRepository;
         this.defaultLimit = defaultLimit;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Transactional
@@ -56,6 +67,9 @@ public class LimitService {
 
         LimitOperation operation = new LimitOperation(operationId, userId, amount, OperationStatus.RESERVED);
         operationRepository.save(operation);
+
+         LimitEvent event = new LimitEvent(userId, operationId, amount, "RESERVED", "Средства успешно зарезервированы");
+        kafkaTemplate.send(topicName, operationId, event);
     }
 
     @Transactional
@@ -75,6 +89,9 @@ public class LimitService {
 
         operation.setStatus(OperationStatus.CONFIRMED);
         operationRepository.save(operation);
+
+        LimitEvent event = new LimitEvent(operation.getUserId(), operationId, operation.getAmount(), "CONFIRMED", "Лимит окончательно списан");
+        kafkaTemplate.send(topicName, operationId, event);
     }
 
     @Transactional
@@ -95,6 +112,9 @@ public class LimitService {
 
         operation.setStatus(OperationStatus.CANCELLED);
         operationRepository.save(operation);
+
+        LimitEvent event = new LimitEvent(operation.getUserId(), operationId, operation.getAmount(), "CANCELLED", "Операция отменена, лимит восстановлен");
+        kafkaTemplate.send(topicName, operationId, event);
     }
 
     @Transactional

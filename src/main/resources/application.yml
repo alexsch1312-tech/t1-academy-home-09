@@ -1,8 +1,10 @@
+server:
+  port: 8081
 spring:
   application:
     name: t1-academy-home-08
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5433/postgres
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -13,9 +15,27 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrap-servers: localhost:9092
+
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+          localhost: localhost
+
 app:
   limits:
     default-value: 100000.00
   scheduler:
     cron-schedule: "0 0 0 * * *"
     timezone: "Europe/Moscow"
+  kafka:
+    topic-name: "limit-status-events"
+    group-id: "limit-service-group"
+
